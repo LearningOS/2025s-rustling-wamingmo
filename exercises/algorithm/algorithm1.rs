@@ -69,14 +69,16 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+	pub fn merge(mut list_a:LinkedList<T>,mut list_b:LinkedList<T>) -> Self
 	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+		let mut list_c = LinkedList::<T>::new();
+        let mut a:Vec<T> = Vec::new();
+        let mut b:Vec<T> = Vec::new();
+
+        for i in a{
+            list_c.add(i);
         }
+		list_c
 	}
 }
 
