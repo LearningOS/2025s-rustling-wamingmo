@@ -1,8 +1,7 @@
 /*
-	heap
-	This question requires you to implement a binary heap function
+    heap
+    This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,7 +36,18 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.items.push(value);
+        self.count += 1;
+        let mut idx = self.count;
+        while idx > 1 {
+            let parent_idx = self.parent_idx(idx);
+            if (self.comparator)(&self.items[idx], &self.items[parent_idx]) {
+                self.items.swap(idx, parent_idx);
+            } else {
+                break;
+            }
+            idx = parent_idx;
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +67,20 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        let left_child = idx * 2;
+        let right_child = left_child + 1;
+
+        // 如果没有右子节点，直接返回左子节点
+        if right_child > self.count {
+            return left_child;
+        }
+
+        // 比较左右子节点，返回较小的那个
+        if (self.comparator)(&self.items[left_child], &self.items[right_child]) {
+            left_child
+        } else {
+            right_child
+        }
     }
 }
 
@@ -79,13 +101,41 @@ where
 
 impl<T> Iterator for Heap<T>
 where
-    T: Default,
+    T: Default + Clone,
 {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.is_empty() {
+            return None;
+        }
+        let top = self.items[1].clone();
+        self.items[1] = self.items[self.count].clone();
+        self.items.pop();
+        self.count -= 1;
+        let mut idx = 1;
+        while self.children_present(idx) {
+            let left_idx = self.left_child_idx(idx);
+            let right_idx = self.right_child_idx(idx);
+
+            let smaller_child_idx = if right_idx <= self.count
+                && (self.comparator)(&self.items[right_idx], &self.items[left_idx])
+            {
+                right_idx
+            } else {
+                left_idx
+            };
+
+            if (self.comparator)(&self.items[smaller_child_idx], &self.items[idx]) {
+                self.items.swap(idx, smaller_child_idx);
+            } else {
+                break;
+            }
+
+            idx = smaller_child_idx;
+        }
+
+        Some(top)
     }
 }
 
